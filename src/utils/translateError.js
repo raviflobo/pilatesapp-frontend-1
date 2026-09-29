@@ -1,61 +1,61 @@
 // src/utils/translateError.js
 export const errorTranslations = {
   // --- AUTH ---
-  "Invalid credentials": "שם משתמש או סיסמה שגויים",
-  "Username and password are required": "יש להזין שם משתמש וסיסמה",
-  "User not found": "המשתמש לא נמצא",
-  "Not authenticated": "יש להתחבר כדי להמשיך",
-  "Refresh token is blacklisted.": "התחברות פגה תוקף, אנא התחבר מחדש",
-  "No access token, need to refresh.": "אין גישה, יש לרענן התחברות",
+  "Invalid credentials": "Invalid username or password",
+  "Username and password are required": "Username and password are required",
+  "User not found": "User not found",
+  "Not authenticated": "Please log in to continue",
+  "Refresh token is blacklisted.": "Session expired, please log in again",
+  "No access token, need to refresh.": "Access expired, refreshing session...",
 
   // NEW
-  "Already logged out": "כבר נותקת מהמערכת",
-  "No refresh token provided": "לא סופק אסימון רענון",
+  "Already logged out": "Already logged out",
+  "No refresh token provided": "No refresh token provided",
 
   // --- USERS ---
-  "All fields are required": "נא למלא את כל השדות",
-  "Invalid email format": "פורמט אימייל שגוי",
-  "User already exists": "משתמש עם האימייל הזה כבר קיים",
-  "Invalid role value": "ערך תפקיד לא חוקי",
-  "Invalid gender value": "ערך מגדר לא חוקי",
+  "All fields are required": "Please fill in all fields",
+  "Invalid email format": "Invalid email format",
+  "User already exists": "A user with this email already exists",
+  "Invalid role value": "Invalid role value",
+  "Invalid gender value": "Invalid gender value",
 
   // --- SESSIONS ---
-  "Session not found": "האימון לא נמצא",
+  "Session not found": "Session not found",
   "Cannot register to a completed or cancelled session":
-    "לא ניתן להירשם לאימון שהושלם או בוטל",
-  "Already registered to this session": "כבר נרשמת לאימון הזה",
-  "Session is full": "האימון מלא",
-  "Invalid pagination parameters": "פרמטרים לא תקינים בעמודי הדפים",
+    "Cannot register to a completed or cancelled session",
+  "Already registered to this session": "You are already registered to this session",
+  "Session is full": "This session is full",
+  "Invalid pagination parameters": "Invalid pagination parameters",
   "Cannot unregister from a completed or cancelled session":
-    "לא ניתן לבטל הרשמה מאימון שהושלם או בוטל",
-  "User is not registered to this session": "המשתמש לא רשום לאימון הזה",
-  "Session already cancelled": "האימון כבר בוטל",
-  "Invalid user ID": "מזהה משתמש לא תקין",
-  "User already registered to this session": "משתמש כבר רשום לאימון הזה",
+    "Cannot unregister from a completed or cancelled session",
+  "User is not registered to this session": "User is not registered to this session",
+  "Session already cancelled": "Session already cancelled",
+  "Invalid user ID": "Invalid user ID",
+  "User already registered to this session": "User is already registered to this session",
   "Max participants must be greater than 0":
-    "מספר המשתתפים המקסימלי חייב להיות גדול מ-0",
-  "Duration must be greater than 0": "משך האימון חייב להיות גדול מ-0",
-  "Invalid status": "סטטוס לא חוקי",
-  "Cannot create a session in the past": "לא ניתן ליצור אימון בעבר",
+    "Max participants must be greater than 0",
+  "Duration must be greater than 0": "Duration must be greater than 0",
+  "Invalid status": "Invalid status",
+  "Cannot create a session in the past": "Cannot create a session in the past",
 
   // NEW
   "Cannot update a cancelled or completed session":
-    "לא ניתן לעדכן אימון שבוטל או הושלם",
+    "Cannot update a cancelled or completed session",
 
   // --- By status ---
-  400: "הבקשה לא תקינה",
-  401: "אין הרשאה לבצע פעולה זו",
-  403: "גישה אסורה",
-  404: "המשאב לא נמצא",
-  500: "שגיאה פנימית בשרת",
+  400: "Invalid request",
+  401: "Unauthorized action",
+  403: "Access forbidden",
+  404: "Resource not found",
+  500: "Internal server error",
 
   // Default
-  DEFAULT: "אירעה שגיאה, נסה שוב מאוחר יותר",
+  DEFAULT: "An error occurred, please try again later",
 };
 
 export const translateError = (error) => {
   if (!error?.response) {
-    const customError = new Error(error.message || "אירעה שגיאה לא צפויה");
+    const customError = new Error(error.message || "An unexpected error occurred");
     customError.status = error.status || 500;
     return customError;
   }
@@ -65,6 +65,7 @@ export const translateError = (error) => {
 
   const translated =
     errorTranslations[message] ||
+    message ||
     errorTranslations[status] ||
     errorTranslations.DEFAULT;
 

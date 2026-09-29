@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuthContext } from "../../context/authContext";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
-import TopBar from "../../components/HomeComponents/TopBar";
 import WorkoutSection from "../../components/HomeComponents/WorkoutSection";
 import SignupSection from "../../components/HomeComponents/SignupSection";
 import useSessions from "../../hooks/UsersHooks/useSessions";
@@ -14,11 +13,10 @@ const HomePage = () => {
   const {
     sessions: availableSessions,
     loading: loadingSessions,
-    error,
   } = useSessions(new Date().toISOString().split("T")[0]);
 
   if (loading || loadingSessions)
-    return <LoadingSpinner text="טוען פרטי משתמש..." />;
+    return <LoadingSpinner text="Loading user details..." />;
 
   return (
     <div style={styles.container}>
@@ -36,7 +34,7 @@ const styles = {
     backgroundColor: "white",
     padding: 0,
     height: "100vh",
-    direction: "rtl",
+    direction: "ltr",
     display: "flex",
     flexDirection: "column",
   },

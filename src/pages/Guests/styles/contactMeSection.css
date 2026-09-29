@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-direction: row-reverse;
+  flex-direction: row;
   gap: 0.7rem;
   padding: 0.1rem 1rem;
   height: 80px;
@@ -63,7 +63,7 @@
 .contact-text {
   flex: 1;
   text-align: center;
-  direction: rtl;
+  direction: ltr;
   max-width: 900px;
   flex-direction: column;
   justify-content: center;

@@ -25,7 +25,7 @@ export const ErrorProvider = ({ children }) => {
   useEffect(() => {
     if (error) {
       toast.error(
-        `שגיאה${error.status ? " " + error.status : ""}: ${error.message}`
+        `Error${error.status ? " " + error.status : ""}: ${error.message}`
       );
       clearError();
     }

@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoadingSpinner = ({ text = "טוען..." }) => {
+const LoadingSpinner = ({ text = "Loading..." }) => {
   return (
     <div style={styles.container}>
       <div className="spinner"></div>
@@ -26,7 +26,7 @@ const LoadingSpinner = ({ text = "טוען..." }) => {
 
 const styles = {
   container: {
-    direction: "rtl",
+    direction: "ltr",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",

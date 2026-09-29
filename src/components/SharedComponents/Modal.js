@@ -26,7 +26,7 @@ const modalStyles = {
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center", // ⬅ מרכז הדף
+    alignItems: "center", // Center of page
     zIndex: 1000,
     padding: "1.5rem",
     boxSizing: "border-box",

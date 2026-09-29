@@ -17,18 +17,15 @@ const LoginAndRegister = () => {
     const content = contentRef.current;
 
     const currentHeight = card.offsetHeight;
-
     const newHeight = content.offsetHeight;
 
     card.style.height = currentHeight + "px";
-
     void card.offsetHeight;
-
     card.style.height = newHeight + "px";
   }, [isRegisterMode]);
 
   if (loading) {
-    return <LoadingSpinner text="מתחבר למערכת..." />;
+    return <LoadingSpinner text="Connecting to system..." />;
   }
 
   return (
@@ -39,12 +36,12 @@ const LoginAndRegister = () => {
       >
         <div style={{ width: "90%" }} ref={contentRef}>
           <h1 style={styles.title}>
-            {isRegisterMode ? "ברוכים הבאים !" : "התחברות"}
+            {isRegisterMode ? "Welcome!" : "Login"}
           </h1>
 
           {isRegisterMode ? <RegisterForm /> : <LoginForm />}
 
-          <div style={styles.divider}>או</div>
+          <div style={styles.divider}>or</div>
 
           <button
             style={{
@@ -56,7 +53,9 @@ const LoginAndRegister = () => {
             }}
             onClick={() => setIsRegisterMode((prev) => !prev)}
           >
-            {isRegisterMode ? "כבר רשומים? התחברו" : "אין לכם חשבון? להרשמה"}
+            {isRegisterMode
+              ? "Already have an account? Log in"
+              : "Don't have an account? Sign up"}
           </button>
         </div>
       </div>
@@ -66,7 +65,7 @@ const LoginAndRegister = () => {
 
 const styles = {
   container: {
-    direction: "rtl",
+    direction: "ltr",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

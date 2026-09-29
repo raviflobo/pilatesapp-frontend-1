@@ -46,8 +46,8 @@
 
 .bubble-text {
   max-width: 400px;
-  text-align: right;
-  direction: rtl;
+  text-align: left;
+  direction: ltr;
   font-size: 1.2rem;
   color: #333;
 }

@@ -1,15 +1,25 @@
 import React, { useState } from "react";
-import { FiEdit, FiTrash2, FiInfo } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiInfo, FiActivity } from "react-icons/fi";
 import EditUserModal from "./EditUserModal";
+import RecordBodyStatsModal from "./RecordBodyStatsModal";
 import useAdminHandler from "../../hooks/AdminsHooks/useAdminHandler";
+import { useAuthContext } from "../../context/authContext";
 
 const AllUsersTable = ({ users, setUsers }) => {
+  const { user: currentUser } = useAuthContext();
   const [infoExpandedId, setInfoExpandedId] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
+  const [statsUser, setStatsUser] = useState(null);
   const { handleDeleteUser } = useAdminHandler();
 
   const toggleInfoExpand = (id) => {
     setInfoExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const formatGender = (gender) => {
+    if (gender === "male") return "Male";
+    if (gender === "female") return "Female";
+    return "Other";
   };
 
   return (
@@ -19,10 +29,10 @@ const AllUsersTable = ({ users, setUsers }) => {
           <table style={styles.table}>
             <thead>
               <tr style={styles.headerRow}>
-                <th>שם מלא</th>
-                <th>שם משתמש</th>
-                <th>תפקיד</th>
-                <th>פעולות</th>
+                <th>Full Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -33,7 +43,7 @@ const AllUsersTable = ({ users, setUsers }) => {
                     <td style={styles.cell}>{user.username}</td>
                     <td style={styles.cell}>
                       <span style={styles.roleBadge(user.role)}>
-                        {user.role === "admin" ? "מנהל" : "משתמש"}
+                        {user.role === "admin" ? "Admin" : "User"}
                       </span>
                     </td>
                     <td style={styles.cell}>
@@ -41,23 +51,40 @@ const AllUsersTable = ({ users, setUsers }) => {
                         <button
                           style={styles.iconBtn}
                           onClick={() => setEditingUser(user)}
+                          title="Edit User & Subscription"
                         >
                           <FiEdit />
                         </button>
                         <button
-                          style={styles.iconBtn}
-                          onClick={() => {
-                            const confirmed = window.confirm(
-                              "האם אתה בטוח שברצונך למחוק את המשתמש?"
-                            );
-                            if (confirmed) handleDeleteUser(user._id);
+                          style={{
+                            ...styles.iconBtn,
+                            backgroundColor: "#DCFCE7",
+                            borderColor: "#86EFAC",
+                            color: "#15803D",
                           }}
+                          onClick={() => setStatsUser(user)}
+                          title="Record Body Stats"
                         >
-                          <FiTrash2 />
+                          <FiActivity />
                         </button>
+                        {currentUser?.role === "admin" && (
+                          <button
+                            style={styles.iconBtn}
+                            onClick={() => {
+                              const confirmed = window.confirm(
+                                "Are you sure you want to delete this user?"
+                              );
+                              if (confirmed) handleDeleteUser(user._id);
+                            }}
+                            title="Delete User (Super Admin)"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        )}
                         <button
                           style={styles.iconBtn}
                           onClick={() => toggleInfoExpand(user._id)}
+                          title="Details"
                         >
                           <FiInfo />
                         </button>
@@ -68,20 +95,34 @@ const AllUsersTable = ({ users, setUsers }) => {
                     <tr>
                       <td colSpan="4" style={styles.expandBox}>
                         <div style={styles.infoLine}>
-                          <strong>אימייל:</strong> {user.email}
+                          <strong>Email:</strong> {user.email}
                         </div>
                         <div style={styles.infoLine}>
-                          <strong>תאריך לידה:</strong>{" "}
-                          {new Date(user.birthDate).toLocaleDateString("he-IL")}
+                          <strong>Date of Birth:</strong>{" "}
+                          {user.birthDate
+                            ? new Date(user.birthDate).toLocaleDateString("en-US")
+                            : "N/A"}
                         </div>
                         <div style={styles.infoLine}>
-                          <strong>מין:</strong>{" "}
-                          {user.gender === "male"
-                            ? "זכר"
-                            : user.gender === "female"
-                            ? "נקבה"
-                            : "אחר"}
+                          <strong>Gender:</strong>{" "}
+                          {formatGender(user.gender)}
                         </div>
+                        {user.subscription && (
+                          <div style={{ ...styles.infoLine, marginTop: "6px" }}>
+                            <strong>Subscription:</strong> {user.subscription.planName || "Monthly Membership"} &bull;{" "}
+                            Valid until{" "}
+                            {user.subscription.endDate
+                              ? new Date(user.subscription.endDate).toLocaleDateString("en-US")
+                              : "N/A"}
+                          </div>
+                        )}
+                        {user.bodyStats?.length > 0 && (
+                          <div style={{ ...styles.infoLine, color: "#059669" }}>
+                            <strong>Latest Recorded Weight:</strong>{" "}
+                            {user.bodyStats[user.bodyStats.length - 1].weight} kg (BMI:{" "}
+                            {user.bodyStats[user.bodyStats.length - 1].bmi || "--"})
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )}
@@ -91,11 +132,20 @@ const AllUsersTable = ({ users, setUsers }) => {
           </table>
         </div>
       </div>
-      {/* Modal for Editing User */}
+
+      {/* Modal for Editing User & Subscription */}
       <EditUserModal
         user={editingUser}
         isOpen={!!editingUser}
         onClose={() => setEditingUser(null)}
+        setUsers={setUsers}
+      />
+
+      {/* Modal for Recording Body Stats */}
+      <RecordBodyStatsModal
+        user={statsUser}
+        isOpen={!!statsUser}
+        onClose={() => setStatsUser(null)}
         setUsers={setUsers}
       />
     </div>
@@ -107,6 +157,7 @@ const styles = {
     padding: "1rem 0.5rem",
     fontFamily: '"M PLUS Rounded 1c", sans-serif',
     backgroundColor: "#f9fafb",
+    direction: "ltr",
   },
   tableContainer: {
     width: "100%",
@@ -121,7 +172,7 @@ const styles = {
     minWidth: "100%",
     borderCollapse: "separate",
     borderSpacing: "0 12px",
-    direction: "rtl",
+    direction: "ltr",
     fontSize: "0.95rem",
   },
   headerRow: {
@@ -129,7 +180,7 @@ const styles = {
     height: "44px",
   },
   row: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#ffffff",
     borderRadius: "10px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
     height: "64px",
@@ -162,7 +213,7 @@ const styles = {
     padding: "1rem 1rem",
     fontSize: "0.9rem",
     borderRadius: "0 0 10px 10px",
-    textAlign: "right",
+    textAlign: "left",
   },
   infoLine: {
     marginBottom: "0.4rem",

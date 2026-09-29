@@ -18,21 +18,12 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner text="טוען נתונים..." />;
+  if (loading) return <LoadingSpinner text="Loading data..." />;
 
   return (
     <div style={styles.wrapper}>
-      <h2 style={styles.title}>לוח ניהול</h2>
+      <h2 style={styles.title}>Admin Dashboard</h2>
       <div style={styles.navButtons}>
-        <button
-          style={{
-            ...styles.navButton,
-            ...(visibleTable === "users" ? styles.activeButton : {}),
-          }}
-          onClick={() => setVisibleTable("users")}
-        >
-          ניהול משתמשים
-        </button>
         <button
           style={{
             ...styles.navButton,
@@ -40,7 +31,16 @@ const AdminDashboard = () => {
           }}
           onClick={() => setVisibleTable("sessions")}
         >
-          ניהול אימונים
+          Manage Sessions
+        </button>
+        <button
+          style={{
+            ...styles.navButton,
+            ...(visibleTable === "users" ? styles.activeButton : {}),
+          }}
+          onClick={() => setVisibleTable("users")}
+        >
+          Manage Users
         </button>
       </div>
       <div style={styles.content}>{renderTable()}</div>
@@ -52,6 +52,7 @@ const styles = {
   wrapper: {
     fontFamily: '"M PLUS Rounded 1c", sans-serif',
     minHeight: "100vh",
+    direction: "ltr",
   },
   title: {
     fontSize: "1.4rem",

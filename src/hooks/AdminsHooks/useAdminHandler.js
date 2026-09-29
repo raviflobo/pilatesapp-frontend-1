@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useErrorContext } from "../../context/errorContext";
 import {
-  createSession,
   createSession__,
   registerUserToSession,
   unregisterUserFromSession,
   updateSession,
+  deleteSession,
+  cancelSession,
 } from "../../services/sessionService";
 import { toast } from "react-toastify";
 import { deleteUser, updateUser } from "../../services/userService";
@@ -18,7 +19,7 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await unregisterUserFromSession(sessionId, userId);
-      toast.success("משתמש הוסר מההרשמה בהצלחה!");
+      toast.success("User removed from session successfully!");
       return res;
     } catch (error) {
       setError(error);
@@ -31,7 +32,7 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await updateSession(sessionId, sessionData);
-      toast.success("ההרשמה עודכנה בהצלחה!");
+      toast.success("Session updated successfully!");
       return { success: true, response: res };
     } catch (error) {
       setError(error);
@@ -45,7 +46,7 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await registerUserToSession(sessionId, username);
-      toast.success("ההרשמה עודכנה בהצלחה!");
+      toast.success("User added to session successfully!");
       return { success: true, response: res };
     } catch (error) {
       setError(error);
@@ -59,7 +60,7 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await updateUser(userId, userData);
-      toast.success("שינוי פרטי המשתמש בוצע בהצלחה!");
+      toast.success("User details updated successfully!");
       return { success: true, response: res };
     } catch (error) {
       setError(error);
@@ -73,7 +74,7 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await deleteUser(userId);
-      toast.success("!משתמש נמחק בהצלחה");
+      toast.success("User deleted successfully!");
       return { success: true, response: res };
     } catch (error) {
       setError(error);
@@ -87,11 +88,39 @@ const useAdminHandler = () => {
     try {
       setLoading(true);
       const res = await createSession__(sessionData);
-      toast.success("אימון נוצר בהצלחה!");
+      toast.success("Session created successfully!");
       return { success: true, response: res };
     } catch (error) {
       setError(error);
       return { success: false, response: null };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSession = async (sessionId) => {
+    try {
+      setLoading(true);
+      await deleteSession(sessionId);
+      toast.success("Class deleted!");
+      return true;
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Delete failed");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelSession = async (sessionId) => {
+    try {
+      setLoading(true);
+      const res = await cancelSession(sessionId);
+      toast.success("Class cancelled!");
+      return res;
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Cancel failed");
+      return null;
     } finally {
       setLoading(false);
     }
@@ -104,6 +133,8 @@ const useAdminHandler = () => {
     handleUpdateUserData,
     handleDeleteUser,
     handleCreateSession,
+    handleDeleteSession,
+    handleCancelSession,
     loading,
   };
 };

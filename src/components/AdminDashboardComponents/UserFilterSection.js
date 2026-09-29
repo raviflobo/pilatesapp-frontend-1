@@ -19,6 +19,7 @@ const UserFilterSection = ({
         borderRadius: "12px",
         boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
         margin: "1rem",
+        direction: "ltr",
       }}
     >
       <div style={{ width: "100%" }}>
@@ -26,7 +27,7 @@ const UserFilterSection = ({
           type="text"
           value={search}
           onChange={handleSearchChange}
-          placeholder="חיפוש לפי שם, מייל, תפקיד או מגדר..."
+          placeholder="Search by name, email, role, or gender..."
           style={{
             padding: "0.75rem 1rem",
             borderRadius: "8px",
@@ -36,6 +37,7 @@ const UserFilterSection = ({
             backgroundColor: "#f9fafb",
             boxSizing: "border-box",
             display: "block",
+            direction: "ltr",
           }}
         />
       </div>
@@ -56,16 +58,17 @@ const UserFilterSection = ({
             MozAppearance: "none",
             backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "left 1rem center",
+            backgroundPosition: "right 1rem center",
             backgroundSize: "1rem",
-            paddingLeft: "2.5rem",
+            paddingRight: "2.5rem",
+            direction: "ltr",
           }}
         >
-          <option value="username">שם משתמש</option>
-          <option value="fullName">שם מלא</option>
-          <option value="email">אימייל</option>
-          <option value="role">תפקיד</option>
-          <option value="gender">מגדר</option>
+          <option value="username">Username</option>
+          <option value="fullName">Full Name</option>
+          <option value="email">Email</option>
+          <option value="role">Role</option>
+          <option value="gender">Gender</option>
         </select>
 
         <select
@@ -84,13 +87,14 @@ const UserFilterSection = ({
             MozAppearance: "none",
             backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "left 1rem center",
+            backgroundPosition: "right 1rem center",
             backgroundSize: "1rem",
-            paddingLeft: "2.5rem",
+            paddingRight: "2.5rem",
+            direction: "ltr",
           }}
         >
-          <option value="asc">סדר עולה</option>
-          <option value="desc">סדר יורד</option>
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
         </select>
       </div>
     </div>

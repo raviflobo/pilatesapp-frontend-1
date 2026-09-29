@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { FiUsers, FiEdit, FiPlus, FiTrash2, FiInfo } from "react-icons/fi";
-import {
-  registerUserToSession,
-  unregisterFromSelectedSession,
-} from "../../services/sessionService";
-import { useErrorContext } from "../../context/errorContext";
-import { toast } from "react-toastify";
 import useAdminHandler from "../../hooks/AdminsHooks/useAdminHandler";
-import Modal from "../SharedComponents/Modal";
 import EditSessionModal from "./EditSessionModal";
 import AddUserToSessionModal from "./AddUserToSessionModal";
+
+const formatStatus = (status) => {
+  if (status === "מתוכנן") return "Scheduled";
+  if (status === "בוטל") return "Cancelled";
+  if (status === "הושלם") return "Completed";
+  return status;
+};
+
+const formatLocation = (loc) => {
+  if (loc === "סטודיו") return "Studio";
+  return loc;
+};
 
 const AllSessionsTable = ({ sessions, setSessions }) => {
   const [expandedSessionId, setExpandedSessionId] = useState(null);
@@ -18,11 +23,7 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
   const [editingSession, setEditingSession] = useState(null);
   const [addingUserSessionId, setAddingUserSessionId] = useState(null);
 
-  // Error context
-  const { setError } = useErrorContext();
-
-  // Admin handler functions
-  const { handleUnregisterUserFromSession, loading } = useAdminHandler();
+  const { handleUnregisterUserFromSession } = useAdminHandler();
 
   const handleUnregisterUserFromSessionHandler = async (sessionId, userId) => {
     const res = await handleUnregisterUserFromSession(sessionId, userId);
@@ -65,16 +66,14 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
           <table style={styles.table}>
             <thead>
               <tr style={styles.headerRow}>
-                <th>תאריך</th>
-                <th>סוג</th>
-                <th>סטטוס</th>
-                <th>פעולות</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {sessions?.map((session) => {
-                const isFull =
-                  session.participants?.length >= session.maxParticipants;
                 return (
                   <React.Fragment key={session._id}>
                     <tr
@@ -84,7 +83,7 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                       }}
                     >
                       <td style={styles.cell}>
-                        {new Date(session.date).toLocaleDateString("he-IL", {
+                        {new Date(session.date).toLocaleDateString("en-US", {
                           year: "2-digit",
                           month: "2-digit",
                           day: "2-digit",
@@ -93,7 +92,7 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                       <td style={styles.cell}>{session.type}</td>
                       <td style={styles.cell}>
                         <span style={styles.statusBadge(session.status)}>
-                          {session.status}
+                          {formatStatus(session.status)}
                         </span>
                       </td>
                       <td style={styles.cell}>
@@ -101,6 +100,7 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                           <button
                             style={getIconBtnStyle}
                             onClick={() => setEditingSession(session)}
+                            title="Edit Session"
                           >
                             <FiEdit />
                           </button>
@@ -108,12 +108,14 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                           <button
                             style={getIconBtnStyle}
                             onClick={() => toggleExpand(session._id)}
+                            title="Participants"
                           >
                             <FiUsers />
                           </button>
                           <button
                             style={getIconBtnStyle}
                             onClick={() => toggleInfoExpand(session._id)}
+                            title="Details"
                           >
                             <FiInfo />
                           </button>
@@ -124,17 +126,30 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                       <tr>
                         <td colSpan="4" style={styles.expandBox}>
                           <div style={styles.infoLine}>
-                            <strong>שעה:</strong> {session.time}
+                            <strong>Time:</strong> {session.time}
                           </div>
                           <div style={styles.infoLine}>
-                            <strong>משך זמן:</strong> {session.duration} דקות
+                            <strong>Duration:</strong> {session.duration} minutes
                           </div>
                           <div style={styles.infoLine}>
-                            <strong>מיקום:</strong> {session.location}
+                            <strong>Difficulty:</strong>{" "}
+                            {session.difficulty || "All Levels"}
                           </div>
                           <div style={styles.infoLine}>
-                            <strong>הערות:</strong> {session.notes}
+                            <strong>Trainer:</strong>{" "}
+                            {session.trainer?.name || "Rotem (Lead Instructor)"}
                           </div>
+                          <div style={styles.infoLine}>
+                            <strong>Location:</strong> {formatLocation(session.location)}
+                          </div>
+                          <div style={styles.infoLine}>
+                            <strong>Notes:</strong> {session.notes || "None"}
+                          </div>
+                          {session.waitingList?.length > 0 && (
+                            <div style={{ ...styles.infoLine, color: "#d97706" }}>
+                              <strong>⏳ Waiting List:</strong> {session.waitingList.length} members waiting
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )}
@@ -142,8 +157,8 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                       <tr>
                         <td colSpan="4" style={styles.expandBox}>
                           <div style={styles.infoLine}>
-                            <strong>משתתפים:</strong>{" "}
-                            {session.participants?.length || 0} מתוך{" "}
+                            <strong>Participants:</strong>{" "}
+                            {session.participants?.length || 0} of{" "}
                             {session.maxParticipants}
                           </div>
                           <div style={styles.participantsList}>
@@ -151,13 +166,13 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                               session.participants.map((p, i) => (
                                 <div key={i} style={styles.participantCard}>
                                   <div>
-                                    <strong>שם מלא:</strong> {p.fullName || "—"}
+                                    <strong>Full Name:</strong> {p.fullName || "—"}
                                   </div>
                                   <div>
-                                    <strong>שם משתמש:</strong> {p.username}
+                                    <strong>Username:</strong> {p.username}
                                   </div>
                                   <div>
-                                    <strong>אימייל:</strong> {p.email}
+                                    <strong>Email:</strong> {p.email}
                                   </div>
                                   <button
                                     style={styles.removeBtn}
@@ -168,13 +183,13 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                                       )
                                     }
                                   >
-                                    <FiTrash2 /> הסר
+                                    <FiTrash2 /> Remove
                                   </button>
                                 </div>
                               ))
                             ) : (
                               <div style={styles.noParticipants}>
-                                אין משתתפים
+                                No participants registered
                               </div>
                             )}
                             <button
@@ -183,9 +198,34 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
                                 setAddingUserSessionId(session._id)
                               }
                             >
-                              <FiPlus /> הוסף משתתף
+                              <FiPlus /> Add Participant
                             </button>
                           </div>
+
+                          {session.waitingList?.length > 0 && (
+                            <div style={{ marginTop: "1rem" }}>
+                              <strong style={{ color: "#d97706" }}>
+                                Waiting List ({session.waitingList.length}):
+                              </strong>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "6px" }}>
+                                {session.waitingList.map((w, idx) => (
+                                  <div
+                                    key={idx}
+                                    style={{
+                                      backgroundColor: "#fffbeb",
+                                      border: "1px solid #fde68a",
+                                      borderRadius: "6px",
+                                      padding: "6px 10px",
+                                      fontSize: "0.85rem",
+                                      color: "#92400e",
+                                    }}
+                                  >
+                                    #{idx + 1} - {w.fullName || w.username || w}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )}
@@ -221,6 +261,7 @@ const styles = {
     padding: "1rem 0.5rem",
     fontFamily: '"M PLUS Rounded 1c", sans-serif',
     backgroundColor: "#f9fafb",
+    direction: "ltr",
   },
   tableContainer: {
     width: "100%",
@@ -230,19 +271,12 @@ const styles = {
     WebkitOverflowScrolling: "touch",
     maxWidth: "100vw",
   },
-  sectionTitle: {
-    fontSize: "1.4rem",
-    fontWeight: "700",
-    marginBottom: "1rem",
-    color: "#1e293b",
-    textAlign: "center",
-  },
   table: {
     width: "100%",
     minWidth: "100%",
     borderCollapse: "separate",
     borderSpacing: "0 12px",
-    direction: "rtl",
+    direction: "ltr",
     fontSize: "0.95rem",
   },
   headerRow: {
@@ -268,16 +302,6 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
   },
-  iconBtn: {
-    backgroundColor: "#e2e8f0",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "1rem",
-    padding: "5px 8px",
-    color: "#1e293b",
-    transition: "background-color 0.2s ease",
-  },
   statusBadge: (status) => ({
     padding: "4px 8px",
     borderRadius: "6px",
@@ -301,7 +325,7 @@ const styles = {
     padding: "1rem 1rem",
     fontSize: "0.9rem",
     borderRadius: "0 0 10px 10px",
-    textAlign: "right",
+    textAlign: "left",
   },
   infoLine: {
     marginBottom: "0.4rem",
@@ -345,37 +369,6 @@ const styles = {
     color: "#64748b",
     fontStyle: "italic",
     fontSize: "0.8rem",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    marginBottom: "1rem",
-  },
-  input: {
-    padding: "0.65rem",
-    borderRadius: "8px",
-    border: "1px solid #e2e8f0",
-    fontSize: "1rem",
-  },
-  textarea: {
-    padding: "0.65rem",
-    borderRadius: "8px",
-    border: "1px solid #e2e8f0",
-    fontSize: "1rem",
-    resize: "vertical",
-  },
-  submitBtn: {
-    backgroundColor: "#2563eb",
-    color: "#fff",
-    padding: "0.75rem",
-    fontSize: "1rem",
-    border: "none",
-    borderRadius: "8px",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "1rem",
-    transition: "background 0.2s ease",
   },
 };
 

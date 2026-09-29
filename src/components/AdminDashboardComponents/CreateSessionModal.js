@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Modal from "../SharedComponents/Modal";
 import { useErrorContext } from "../../context/errorContext";
-import { toast } from "react-toastify";
 import { validateForm } from "../../utils/sharedUtils";
 import useAdminHandler from "../../hooks/AdminsHooks/useAdminHandler";
 
@@ -12,8 +11,11 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
   const [formData, setFormData] = useState({
     date: "",
     time: "",
-    duration: "",
-    type: "",
+    duration: "55",
+    type: "Reformer Core",
+    difficulty: "All Levels",
+    trainerName: "Rotem",
+    description: "",
     notes: "",
     status: "מתוכנן",
     location: "סטודיו",
@@ -36,22 +38,32 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
         maxParticipants: formData.maxParticipants,
       })
     ) {
-      setError(new Error("נא למלא את כל השדות החובה"));
+      setError(new Error("Please fill in all required fields"));
       return;
     }
-    const res = await handleCreateSession(formData);
+
+    const payload = {
+      ...formData,
+      trainer: {
+        name: formData.trainerName || "Rotem",
+        bio: "Certified Classical Pilates Master",
+      },
+    };
+    delete payload.trainerName;
+
+    const res = await handleCreateSession(payload);
     if (res.success) {
-      setSessions((prev) => (prev ? [res.response, ...prev] : [res.response])); // Adding new session to state, or if the state is empty create a nre session and make it the only one there
+      setSessions((prev) => (prev ? [res.response, ...prev] : [res.response]));
       onClose();
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2>יצירת אימון חדש</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <h2 style={{ margin: "0 0 16px 0", color: "#0F172A" }}>Create New Session</h2>
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} style={styles.form}>
         <div style={styles.formGroup}>
-          <label>תאריך:</label>
+          <label>Date:</label>
           <input
             name="date"
             type="date"
@@ -60,7 +72,7 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label>שעה:</label>
+          <label>Time:</label>
           <input
             name="time"
             type="time"
@@ -69,49 +81,91 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label>משך בדקות:</label>
+          <label>Duration (minutes):</label>
           <input
             name="duration"
             type="number"
+            defaultValue={55}
             onChange={handleChange}
             style={styles.input}
           />
         </div>
         <div style={styles.formGroup}>
-          <label>סוג אימון:</label>
+          <label>Workout Type:</label>
           <input
             name="type"
             type="text"
+            placeholder="e.g. Reformer Pilates, Mat Pilates, Tower Strength"
+            value={formData.type}
             onChange={handleChange}
             style={styles.input}
           />
         </div>
         <div style={styles.formGroup}>
-          <label>הערות:</label>
-          <textarea name="notes" onChange={handleChange} style={styles.input} />
-        </div>
-        <div style={styles.formGroup}>
-          <label>סטטוס:</label>
-          <select name="status" onChange={handleChange} style={styles.input}>
-            <option value="מתוכנן">מתוכנן</option>
-            <option value="בוטל">בוטל</option>
-            <option value="הושלם">הושלם</option>
+          <label>Difficulty Level:</label>
+          <select
+            name="difficulty"
+            value={formData.difficulty}
+            onChange={handleChange}
+            style={styles.input}
+          >
+            <option value="All Levels">All Levels</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
           </select>
         </div>
         <div style={styles.formGroup}>
-          <label>מיקום:</label>
+          <label>Trainer Name:</label>
           <input
-            name="location"
+            name="trainerName"
             type="text"
+            value={formData.trainerName}
             onChange={handleChange}
             style={styles.input}
           />
         </div>
         <div style={styles.formGroup}>
-          <label>מספר משתתפים מקסימלי:</label>
+          <label>Description:</label>
+          <input
+            name="description"
+            type="text"
+            placeholder="Short class summary or focus"
+            onChange={handleChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label>Notes:</label>
+          <textarea name="notes" onChange={handleChange} style={styles.input} />
+        </div>
+        <div style={styles.formGroup}>
+          <label>Status:</label>
+          <select name="status" value={formData.status} onChange={handleChange} style={styles.input}>
+            <option value="מתוכנן">Scheduled</option>
+            <option value="בוטל">Cancelled</option>
+            <option value="הושלם">Completed</option>
+          </select>
+        </div>
+        <div style={styles.formGroup}>
+          <label>Location:</label>
+          <input
+            name="location"
+            type="text"
+            defaultValue="Studio"
+            onChange={(e) => {
+              const val = e.target.value === "Studio" ? "סטודיו" : e.target.value;
+              setFormData({ ...formData, location: val });
+            }}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label>Max Participants:</label>
           <input
             name="maxParticipants"
             type="number"
+            defaultValue={10}
             onChange={handleChange}
             style={styles.input}
           />
@@ -121,7 +175,7 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
           onClick={() => handleSubmit()}
           style={styles.submitBtn}
         >
-          צור אימון
+          Create Session
         </button>
       </form>
     </Modal>
@@ -132,19 +186,21 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "1rem",
-    padding: "1rem",
+    gap: "0.85rem",
+    padding: "0.5rem",
+    direction: "ltr",
   },
   formGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "0.5rem",
+    gap: "0.3rem",
   },
   input: {
     padding: "0.65rem",
     borderRadius: "8px",
     border: "1px solid #e2e8f0",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
+    direction: "ltr",
   },
   submitBtn: {
     backgroundColor: "#2563eb",
@@ -155,7 +211,7 @@ const styles = {
     borderRadius: "8px",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "1rem",
+    marginTop: "0.8rem",
     transition: "background 0.2s ease",
   },
 };

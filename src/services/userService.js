@@ -1,5 +1,3 @@
-import axios from "axios";
-import { API_BASE_URL } from "../api/apiConfig";
 import api from "../api/api";
 import { translateError } from "../utils/translateError";
 
@@ -23,7 +21,7 @@ export const checkIfUserIsAuthenticated = async () => {
 
 export const fetchAuthenticatedUserSessions = async () => {
   try {
-    const response = await api.get("/api/sessions/my");
+    const response = await api.get("/api/sessions/myupcoming");
     return response.data;
   } catch (error) {
     throw translateError(error);
@@ -33,9 +31,19 @@ export const fetchAuthenticatedUserSessions = async () => {
 export const fetchAllUsers = async () => {
   try {
     const res = await api.get("/api/users/all", {
-      params: { sortOrder: "asc", sortField: "role" },
+      params: { sortOrder: "asc", sortField: "role", limit: 200 },
     });
     return res.data;
+  } catch (error) {
+    throw translateError(error);
+  }
+};
+
+// Admin - Create a new user (staff/member)
+export const createUser = async (userData) => {
+  try {
+    const response = await api.post("/api/users/create", userData);
+    return response.data;
   } catch (error) {
     throw translateError(error);
   }
@@ -79,6 +87,46 @@ export const updateUser = async (userId, userData) => {
 export const deleteUser = async (userId) => {
   try {
     const response = await api.delete(`api/users/delete/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw translateError(error);
+  }
+};
+
+// Admin / Trainer - Record body stats for user
+export const recordBodyStats = async (userId, statsData) => {
+  try {
+    const response = await api.post(`/api/users/body-stats/${userId}`, statsData);
+    return response.data;
+  } catch (error) {
+    throw translateError(error);
+  }
+};
+
+// Admin - Update user subscription details
+export const updateUserSubscription = async (userId, subscriptionData) => {
+  try {
+    const response = await api.put(`/api/users/subscription/${userId}`, subscriptionData);
+    return response.data;
+  } catch (error) {
+    throw translateError(error);
+  }
+};
+
+// User - Mark a notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const response = await api.put(`/api/users/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    throw translateError(error);
+  }
+};
+
+// User - Self-service account deletion
+export const deleteMyAccount = async () => {
+  try {
+    const response = await api.delete(`/api/users/account`);
     return response.data;
   } catch (error) {
     throw translateError(error);

@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { loginUser, logoutUser, registerUser } from "../services/authService";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  verifyMemberOtp,
+} from "../services/authService";
 import {
   checkIfUserIsAuthenticated,
   fetchAuthenticatedUser,
@@ -48,12 +53,27 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await loginUser(username, password);
       console.log("Login response:", response);
-      if (response.status == 200) {
+      if (response.status === 200) {
         await loadUserData(); // Load user data after successful login
         await loadUserSessions(); // Fetch user sessions after login
       }
     } catch (error) {
       console.error("Login failed:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithOtp = async (phone, otp, fullName) => {
+    setLoading(true);
+    try {
+      const response = await verifyMemberOtp(phone, otp, fullName);
+      await loadUserData();
+      await loadUserSessions();
+      return response;
+    } catch (error) {
+      console.error("OTP login failed:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -120,8 +140,14 @@ export const AuthProvider = ({ children }) => {
         setUser,
         sessions,
         setSessions,
+        // Top-level convenience (used by admin panel)
+        login,
+        logout,
+        loginWithOtp,
+        // Legacy namespace (kept for mobile compatibility)
         auth: {
           login,
+          loginWithOtp,
           logout,
         },
         register,

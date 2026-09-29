@@ -4,7 +4,7 @@ import { useErrorContext } from "../../context/errorContext.js";
 
 // ADMINS
 const useAllSessionsFromDB = () => {
-  const [data, setData] = useState(null);
+  const [allSessions, setAllSessions] = useState([]);
   const [loading, setLoading] = useState(false);
   const { setError } = useErrorContext();
 
@@ -13,7 +13,9 @@ const useAllSessionsFromDB = () => {
       try {
         setLoading(true);
         const res = await fetchAllSessions();
-        setData(res);
+        // API returns { sessions: [], total, page, totalPages } or just array
+        setAllSessions(Array.isArray(res) ? res : (res?.sessions || []));
+
       } catch (e) {
         setError(e);
       } finally {
@@ -22,7 +24,7 @@ const useAllSessionsFromDB = () => {
     })();
   }, []);
 
-  return { data };
+  return { allSessions, setAllSessions, loading };
 };
 
 export default useAllSessionsFromDB;

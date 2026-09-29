@@ -19,6 +19,7 @@ const SessionFilterSection = ({
         borderRadius: "12px",
         boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
         margin: "1rem",
+        direction: "ltr",
       }}
     >
       <div style={{ width: "100%" }}>
@@ -26,7 +27,7 @@ const SessionFilterSection = ({
           type="text"
           value={search}
           onChange={handleSearchChange}
-          placeholder="חיפוש לפי שעה, סוג, מיקום או הערות..."
+          placeholder="Search by time, type, location or notes..."
           style={{
             padding: "0.75rem 1rem",
             borderRadius: "8px",
@@ -36,6 +37,7 @@ const SessionFilterSection = ({
             backgroundColor: "#f9fafb",
             boxSizing: "border-box",
             display: "block",
+            direction: "ltr",
           }}
         />
       </div>
@@ -56,15 +58,16 @@ const SessionFilterSection = ({
             MozAppearance: "none",
             backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "left 1rem center",
+            backgroundPosition: "right 1rem center",
             backgroundSize: "1rem",
-            paddingLeft: "2.5rem",
+            paddingRight: "2.5rem",
+            direction: "ltr",
           }}
         >
-          <option value="date">תאריך</option>
-          <option value="type">סוג</option>
-          <option value="time">שעה</option>
-          <option value="location">מיקום</option>
+          <option value="date">Date</option>
+          <option value="type">Type</option>
+          <option value="time">Time</option>
+          <option value="location">Location</option>
         </select>
 
         <select
@@ -83,13 +86,14 @@ const SessionFilterSection = ({
             MozAppearance: "none",
             backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "left 1rem center",
+            backgroundPosition: "right 1rem center",
             backgroundSize: "1rem",
-            paddingLeft: "2.5rem",
+            paddingRight: "2.5rem",
+            direction: "ltr",
           }}
         >
-          <option value="asc">סדר עולה</option>
-          <option value="desc">סדר יורד</option>
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
         </select>
       </div>
     </div>

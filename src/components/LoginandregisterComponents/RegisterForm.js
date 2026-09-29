@@ -17,7 +17,7 @@ const RegisterForm = () => {
     confirmPassword: "",
     email: "",
     birthDate: today,
-    gender: "male",
+    gender: "female",
     fullName: "",
   });
 
@@ -40,7 +40,7 @@ const RegisterForm = () => {
         birthDate,
         gender,
         fullName
-      ); // Throws error if not fully filled
+      );
       const newUser = {
         username,
         password,
@@ -50,7 +50,7 @@ const RegisterForm = () => {
         fullName,
       };
       await register(newUser);
-      toast.success("הרשמה בוצעה בהצלחה");
+      toast.success("Registration completed successfully!");
     } catch (error) {
       setError(error);
     }
@@ -64,7 +64,7 @@ const RegisterForm = () => {
           style={styles.input}
           type="text"
           name="username"
-          placeholder="שם משתמש (באנגלית)"
+          placeholder="Username"
           value={formData.username}
           onChange={handleChange}
         />
@@ -76,7 +76,7 @@ const RegisterForm = () => {
           style={styles.input}
           type="password"
           name="password"
-          placeholder="סיסמה"
+          placeholder="Password"
           value={formData.password}
           onChange={handleChange}
         />
@@ -88,7 +88,7 @@ const RegisterForm = () => {
           style={styles.input}
           type="password"
           name="confirmPassword"
-          placeholder="אימות סיסמה"
+          placeholder="Confirm Password"
           value={formData.confirmPassword}
           onChange={handleChange}
         />
@@ -100,7 +100,7 @@ const RegisterForm = () => {
           style={styles.input}
           type="text"
           name="fullName"
-          placeholder="שם מלא"
+          placeholder="Full Name"
           value={formData.fullName}
           onChange={handleChange}
         />
@@ -112,7 +112,7 @@ const RegisterForm = () => {
           style={styles.input}
           type="email"
           name="email"
-          placeholder="אימייל"
+          placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
         />
@@ -132,7 +132,7 @@ const RegisterForm = () => {
           onFocus={(e) => e.target.showPicker && e.target.showPicker()}
         />
         {formData.birthDate === today && (
-          <div style={styles.datePlaceholder}>תאריך לידה</div>
+          <div style={styles.datePlaceholder}>Date of Birth</div>
         )}
       </div>
 
@@ -143,15 +143,15 @@ const RegisterForm = () => {
           value={formData.gender}
           onChange={handleChange}
         >
-          <option value="female">נקבה</option>
-          <option value="male">זכר</option>
-          <option value="other">אחר</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="other">Other</option>
         </select>
         <div style={styles.selectArrow}>▼</div>
       </div>
 
       <button style={styles.button} onClick={handleRegister}>
-        הרשמה
+        Sign Up
       </button>
     </>
   );
@@ -167,7 +167,7 @@ const styles = {
     backgroundColor: "#f9f9f9",
     border: "1px solid #d0d7de",
     borderRadius: "8px",
-    direction: "rtl",
+    direction: "ltr",
   },
   icon: {
     padding: "10px",
@@ -177,7 +177,7 @@ const styles = {
   },
   datePlaceholder: {
     position: "absolute",
-    right: "50px",
+    left: "50px",
     top: "50%",
     transform: "translateY(-50%)",
     color: "#888",
@@ -185,7 +185,6 @@ const styles = {
     fontSize: "16px",
     fontFamily: "'M PLUS Rounded 1c', sans-serif",
   },
-
   input: {
     flex: 1,
     padding: "12px",
@@ -193,7 +192,7 @@ const styles = {
     outline: "none",
     fontSize: "16px",
     backgroundColor: "transparent",
-    textAlign: "right",
+    textAlign: "left",
     fontFamily: "'M PLUS Rounded 1c', sans-serif",
     height: "30px",
     overflow: "hidden",
@@ -206,6 +205,7 @@ const styles = {
   select: {
     width: "100%",
     padding: "12px",
+    paddingLeft: "14px",
     paddingRight: "36px",
     borderRadius: "8px",
     border: "1px solid #d0d7de",
@@ -216,7 +216,7 @@ const styles = {
     appearance: "none",
     WebkitAppearance: "none",
     MozAppearance: "none",
-    textAlign: "right",
+    textAlign: "left",
   },
   selectArrow: {
     position: "absolute",

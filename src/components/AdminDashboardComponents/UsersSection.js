@@ -41,12 +41,12 @@ const UsersSection = ({ users }) => {
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [search, sortField, sortOrder, currentPage]);
+  }, [search, sortField, sortOrder, currentPage, setError]);
 
   return (
     <div
       style={{
-        direction: "rtl",
+        direction: "ltr",
         fontFamily: '"M PLUS Rounded 1c", sans-serif',
       }}
     >

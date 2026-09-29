@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AvailableSessionItem from "./SignUpSectionListComponents/AvailableSessionItem";
-import { addComoponentToDate } from "../../utils/homeUtils";
 import SelectDate from "./SignUpSectionListComponents/SelectDate";
 import { fetchAllSessionsForYear } from "../../services/sessionService";
 import { useErrorContext } from "../../context/errorContext";
 
 const SignupSection = ({ availableSessions }) => {
-  // Date modification
   const { setError } = useErrorContext();
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
@@ -43,7 +41,7 @@ const SignupSection = ({ availableSessions }) => {
       }
     };
     fetchSessions();
-  }, [selectedDate]);
+  }, [selectedDate, availableSessions, setError]);
 
   return (
     <div
@@ -55,9 +53,10 @@ const SignupSection = ({ availableSessions }) => {
         margin: "0 auto",
         gap: "20px",
         paddingBottom: "20px",
+        direction: "ltr",
       }}
     >
-      <h3 style={styles.sectionTitle}>אימונים זמינים להרשמה</h3>
+      <h3 style={styles.sectionTitle}>Available Workouts for Registration</h3>
 
       <SelectDate
         selectedDate={selectedDate}
@@ -75,11 +74,11 @@ const SignupSection = ({ availableSessions }) => {
         }}
       >
         {sessions && sessions.length > 0 ? (
-          sessions?.map((ses) => (
+          sessions.map((ses) => (
             <AvailableSessionItem key={ses._id} session={ses} />
           ))
         ) : (
-          <p>לא נמצאו אימונים לתאריך זה</p>
+          <p>No workouts found for this date</p>
         )}
       </div>
     </div>
@@ -91,8 +90,6 @@ const styles = {
     fontSize: 25,
     color: "black",
     marginBottom: 12,
-    marginTop: 20,
-    flex: 1,
     marginTop: "40px",
   },
 };

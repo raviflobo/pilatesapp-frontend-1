@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../SharedComponents/Modal";
 import useAdminHandler from "../../hooks/AdminsHooks/useAdminHandler";
-import { toast } from "react-toastify";
 
 const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
   const [form, setForm] = useState({});
@@ -15,6 +14,9 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
         time: session.time || "",
         duration: session.duration || "",
         type: session.type || "",
+        difficulty: session.difficulty || "All Levels",
+        trainerName: session.trainer?.name || "Rotem",
+        description: session.description || "",
         status: session.status || "מתוכנן",
         location: session.location || "",
         notes: session.notes || "",
@@ -29,7 +31,16 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
   };
 
   const handleSubmit = async (sessionId) => {
-    const res = await handleUpdateSessionData(sessionId, form);
+    const payload = {
+      ...form,
+      trainer: {
+        name: form.trainerName,
+        bio: session?.trainer?.bio || "Certified Classical Pilates Master",
+      },
+    };
+    delete payload.trainerName;
+
+    const res = await handleUpdateSessionData(sessionId, payload);
     if (res.success) {
       setSessions((prev) =>
         prev.map((s) => (s._id === sessionId ? res.response.session : s))
@@ -40,91 +51,127 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2>עריכת אימון</h2>
+      <h2 style={{ margin: "0 0 16px 0", color: "#0F172A" }}>Edit Session</h2>
 
       <div style={styles.formGroup}>
-        <label>תאריך:</label>
+        <label>Date:</label>
         <input
           name="date"
           type="date"
-          value={form.date}
+          value={form.date || ""}
           onChange={handleChange}
           style={styles.input}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>שעה:</label>
+        <label>Time:</label>
         <input
           name="time"
           type="time"
-          value={form.time}
+          value={form.time || ""}
           onChange={handleChange}
           style={styles.input}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>משך זמן (דקות):</label>
+        <label>Duration (minutes):</label>
         <input
           name="duration"
           type="number"
-          value={form.duration}
+          value={form.duration || ""}
           onChange={handleChange}
           style={styles.input}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>סוג:</label>
+        <label>Class Type:</label>
         <input
           name="type"
-          value={form.type}
+          value={form.type || ""}
           onChange={handleChange}
           style={styles.input}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>סטטוס:</label>
+        <label>Difficulty Level:</label>
         <select
-          name="status"
-          value={form.status}
+          name="difficulty"
+          value={form.difficulty || "All Levels"}
           onChange={handleChange}
           style={styles.input}
         >
-          <option value="מתוכנן">מתוכנן</option>
-          <option value="הושלם">הושלם</option>
-          <option value="בוטל">בוטל</option>
+          <option value="All Levels">All Levels</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
         </select>
       </div>
 
       <div style={styles.formGroup}>
-        <label>מיקום:</label>
+        <label>Trainer Name:</label>
         <input
-          name="location"
-          value={form.location}
+          name="trainerName"
+          value={form.trainerName || ""}
           onChange={handleChange}
           style={styles.input}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>הערות:</label>
+        <label>Description:</label>
+        <input
+          name="description"
+          placeholder="Short class summary"
+          value={form.description || ""}
+          onChange={handleChange}
+          style={styles.input}
+        />
+      </div>
+
+      <div style={styles.formGroup}>
+        <label>Status:</label>
+        <select
+          name="status"
+          value={form.status || "מתוכנן"}
+          onChange={handleChange}
+          style={styles.input}
+        >
+          <option value="מתוכנן">Scheduled</option>
+          <option value="הושלם">Completed</option>
+          <option value="בוטל">Cancelled</option>
+        </select>
+      </div>
+
+      <div style={styles.formGroup}>
+        <label>Location:</label>
+        <input
+          name="location"
+          value={form.location || ""}
+          onChange={handleChange}
+          style={styles.input}
+        />
+      </div>
+
+      <div style={styles.formGroup}>
+        <label>Notes:</label>
         <textarea
           name="notes"
-          value={form.notes}
+          value={form.notes || ""}
           onChange={handleChange}
           style={styles.textarea}
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label>מ"ס משתתפים מקסימלי:</label>
+        <label>Max Participants:</label>
         <input
           name="maxParticipants"
           type="number"
-          value={form.maxParticipants}
+          value={form.maxParticipants ?? 10}
           onChange={handleChange}
           style={styles.input}
         />
@@ -134,7 +181,7 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
         style={styles.submitBtn}
         onClick={() => handleSubmit(session._id)}
       >
-        שמור
+        Save Changes
       </button>
     </Modal>
   );
@@ -144,21 +191,24 @@ const styles = {
   formGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "0.5rem",
-    marginBottom: "1rem",
+    gap: "0.4rem",
+    marginBottom: "0.85rem",
+    direction: "ltr",
   },
   input: {
     padding: "0.65rem",
     borderRadius: "8px",
     border: "1px solid #e2e8f0",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
+    direction: "ltr",
   },
   textarea: {
     padding: "0.65rem",
     borderRadius: "8px",
     border: "1px solid #e2e8f0",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     resize: "vertical",
+    direction: "ltr",
   },
   submitBtn: {
     backgroundColor: "#2563eb",
@@ -170,6 +220,7 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
     marginTop: "1rem",
+    width: "100%",
     transition: "background 0.2s ease",
   },
 };

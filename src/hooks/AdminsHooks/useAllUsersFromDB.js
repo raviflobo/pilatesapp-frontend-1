@@ -3,7 +3,7 @@ import { fetchAllUsers } from "../../services/userService";
 import { useErrorContext } from "../../context/errorContext";
 
 const useAllUsersFromDB = () => {
-  const [users, setUsers] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const { setError } = useErrorContext();
 
@@ -12,7 +12,9 @@ const useAllUsersFromDB = () => {
       try {
         setLoading(true);
         const res = await fetchAllUsers();
-        setUsers(res);
+        // API returns { users: [], total, page, totalPages } or just array
+        setAllUsers(Array.isArray(res) ? res : (res?.users || []));
+
       } catch (e) {
         setError(e);
       } finally {
@@ -21,7 +23,7 @@ const useAllUsersFromDB = () => {
     })();
   }, []);
 
-  return { users, loading };
+  return { allUsers, setAllUsers, loading };
 };
 
 export default useAllUsersFromDB;
