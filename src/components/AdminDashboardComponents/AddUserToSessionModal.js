@@ -34,11 +34,17 @@ const AddUserToSessionModal = ({ sessionId, isOpen, onClose, setSessions }) => {
         setLoadingUsers(true);
         try {
           const res = await fetchAllUsers();
-          // Filter to regular members (role === "user")
-          const membersOnly = (res || []).filter((u) => u.role === "user");
+          // API returns { users: [...], totalPages, ... } or an Array
+          const all = Array.isArray(res) ? res : (res?.users || []);
+          const membersOnly = all.filter(
+            (u) => u.role === "user" || (!u.role && u.username !== "admin")
+          );
           setExistingUsers(membersOnly);
           if (membersOnly.length > 0) {
-            setSelectedUsername(membersOnly[0].username);
+            setSelectedUsername((prev) => {
+              const stillExists = membersOnly.some((m) => m.username === prev);
+              return stillExists ? prev : membersOnly[0].username;
+            });
           }
         } catch (err) {
           console.error("Failed to load users", err);
@@ -95,11 +101,19 @@ const AddUserToSessionModal = ({ sessionId, isOpen, onClose, setSessions }) => {
     }
   };
 
-  const filteredMembers = existingUsers.filter(
-    (u) =>
-      u.fullName?.toLowerCase().includes(userSearch.toLowerCase()) ||
-      u.username?.toLowerCase().includes(userSearch.toLowerCase()) ||
-      u.email?.toLowerCase().includes(userSearch.toLowerCase())
+  const filteredMembers = existingUsers.filter((u) => {
+    const q = userSearch.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      u.fullName?.toLowerCase().includes(q) ||
+      u.username?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q) ||
+      u.phone?.toLowerCase().includes(q)
+    );
+  });
+
+  const selectedMemberObj = existingUsers.find(
+    (u) => u.username === selectedUsername
   );
 
   return (
@@ -161,45 +175,104 @@ const AddUserToSessionModal = ({ sessionId, isOpen, onClose, setSessions }) => {
 
       {activeTab === "existing" ? (
         <div>
+          {/* Member Search */}
           <div style={{ marginBottom: "12px" }}>
             <label style={styles.label}>Search Registered Members:</label>
             <input
               type="text"
-              placeholder="Search by name, username or email..."
+              placeholder="Search by name, username, phone or email..."
               value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
+              onChange={(e) => {
+                setUserSearch(e.target.value);
+              }}
               style={styles.input}
             />
           </div>
 
+          {/* Member Dropdown Picker */}
           <div style={styles.formGroup}>
-            <label style={styles.label}>Select Member:</label>
+            <label style={styles.label}>Select Member ({filteredMembers.length} available):</label>
             {loadingUsers ? (
-              <p style={{ color: "#64748B", fontSize: "0.85rem" }}>Loading registered members...</p>
-            ) : filteredMembers.length === 0 ? (
-              <p style={{ color: "#EF4444", fontSize: "0.85rem" }}>
-                No matching registered members found. Use "Quick Register New Member" tab to add them.
+              <p style={{ color: "#64748B", fontSize: "0.85rem", padding: "8px 0" }}>
+                Loading registered members...
               </p>
+            ) : filteredMembers.length === 0 ? (
+              <div style={{ padding: "12px", background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "8px" }}>
+                <p style={{ color: "#DC2626", fontSize: "0.85rem", margin: 0, fontWeight: "500" }}>
+                  {existingUsers.length === 0
+                    ? "No registered members found in database."
+                    : `No members match "${userSearch}".`}
+                </p>
+                <p style={{ color: "#64748B", fontSize: "0.8rem", margin: "4px 0 0 0" }}>
+                  Use the <strong>"Quick Register New Member"</strong> tab above to add a new member.
+                </p>
+              </div>
             ) : (
               <select
                 value={selectedUsername}
                 onChange={(e) => setSelectedUsername(e.target.value)}
-                style={styles.select}
-                size={Math.min(5, Math.max(2, filteredMembers.length))}
+                style={{
+                  ...styles.select,
+                  height: "44px",
+                  fontWeight: "600",
+                  color: "#0F172A",
+                  backgroundColor: "#F8FAFC",
+                }}
               >
                 {filteredMembers.map((m) => (
-                  <option key={m._id} value={m.username} style={{ padding: "6px" }}>
-                    {m.fullName || m.username} (@{m.username}) &bull; {m.email}
+                  <option key={m._id} value={m.username}>
+                    {m.fullName || m.username} (@{m.username}) {m.phone ? `· 📞 ${m.phone}` : ""} {m.email ? `· ${m.email}` : ""}
                   </option>
                 ))}
               </select>
             )}
           </div>
 
+          {/* Selected Member Preview Card */}
+          {selectedMemberObj && (
+            <div
+              style={{
+                background: "#F1F5F9",
+                border: "1px solid #CBD5E1",
+                borderRadius: "8px",
+                padding: "10px 14px",
+                marginBottom: "12px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontWeight: "700", color: "#0F172A", fontSize: "0.95rem" }}>
+                  {selectedMemberObj.fullName || selectedMemberObj.username}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                    background: "#DBEAFE",
+                    color: "#1E40AF",
+                    fontWeight: "600",
+                  }}
+                >
+                  @{selectedMemberObj.username}
+                </span>
+              </div>
+              <div style={{ fontSize: "0.8rem", color: "#475569" }}>
+                ✉️ {selectedMemberObj.email || "No email"} {selectedMemberObj.phone ? ` · 📞 ${selectedMemberObj.phone}` : ""}
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
-            disabled={submitting || !selectedUsername}
-            style={styles.submitBtn}
+            disabled={submitting || !selectedUsername || filteredMembers.length === 0}
+            style={{
+              ...styles.submitBtn,
+              opacity: (submitting || !selectedUsername || filteredMembers.length === 0) ? 0.6 : 1,
+              cursor: (submitting || !selectedUsername || filteredMembers.length === 0) ? "not-allowed" : "pointer",
+            }}
             onClick={handleAddExisting}
           >
             {submitting ? "Adding to Class..." : "Add Member to Class"}

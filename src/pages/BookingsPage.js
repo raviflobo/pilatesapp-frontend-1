@@ -55,12 +55,26 @@ const BookingsPage = () => {
     Completed: { label: "Completed", cls: "badge-completed" },
   };
 
+  const [filterTrainer, setFilterTrainer] = useState("all");
+  const [filterType, setFilterType] = useState("all");
+
+  const trainers = Array.from(
+    new Set((sessions || []).map((s) => s.trainer?.name).filter(Boolean))
+  ).sort();
+
+  const classTypes = Array.from(
+    new Set((sessions || []).map((s) => s.type).filter(Boolean))
+  ).sort();
+
   const filtered = sessions.filter((s) => {
-    const matchSearch = !search ||
+    const matchSearch =
+      !search ||
       s.type?.toLowerCase().includes(search.toLowerCase()) ||
       s.trainer?.name?.toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "all" || s.status === filterStatus;
-    return matchSearch && matchStatus;
+    const matchTrainer = filterTrainer === "all" || s.trainer?.name === filterTrainer;
+    const matchType = filterType === "all" || s.type === filterType;
+    return matchSearch && matchStatus && matchTrainer && matchType;
   });
 
   const totalBookings = filtered.reduce((acc, s) => acc + (s.participants?.length || 0), 0);
@@ -83,8 +97,8 @@ const BookingsPage = () => {
         </div>
       </div>
 
-      <div className="toolbar">
-        <div className="search-input-wrapper">
+      <div className="toolbar" style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        <div className="search-input-wrapper" style={{ flex: "1 1 240px", minWidth: "200px" }}>
           <span className="search-icon">🔍</span>
           <input
             id="bookings-search"
@@ -94,10 +108,44 @@ const BookingsPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {/* Trainer Dropdown */}
+        <select
+          id="bookings-trainer-filter"
+          className="form-select"
+          style={{ width: "170px" }}
+          value={filterTrainer}
+          onChange={(e) => setFilterTrainer(e.target.value)}
+        >
+          <option value="all">All Trainers</option>
+          {trainers.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+
+        {/* Class Type Dropdown */}
+        <select
+          id="bookings-type-filter"
+          className="form-select"
+          style={{ width: "180px" }}
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="all">All Class Types</option>
+          {classTypes.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+
+        {/* Status Dropdown */}
         <select
           id="bookings-status-filter"
           className="form-select"
-          style={{ width: "160px" }}
+          style={{ width: "140px" }}
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >

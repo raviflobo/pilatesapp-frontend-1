@@ -14,25 +14,34 @@ const MembersPage = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
 
+  const [filterSub, setFilterSub] = useState("all"); // "all" | "active" | "inactive"
+
   const members = (allUsers || []).filter((u) => u.role === "user");
 
-  const filtered = members.filter((u) =>
-    !search ||
-    u.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-    u.username?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.phone?.includes(search)
-  );
+  const isSubActive = (user) => {
+    if (!user.subscription?.endDate) return false;
+    return new Date(user.subscription.endDate) > new Date();
+  };
+
+  const filtered = members.filter((u) => {
+    const matchSearch =
+      !search ||
+      u.fullName?.toLowerCase().includes(search.toLowerCase()) ||
+      u.username?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase()) ||
+      u.phone?.includes(search);
+    const active = isSubActive(u);
+    const matchSub =
+      filterSub === "all" ||
+      (filterSub === "active" && active) ||
+      (filterSub === "inactive" && !active);
+    return matchSearch && matchSub;
+  });
 
   const handleDelete = async (user) => {
     if (!window.confirm(`Permanently delete member "${user.fullName}"? This cannot be undone.`)) return;
     const ok = await handleDeleteUser(user._id);
     if (ok !== false) setAllUsers((prev) => prev.filter((u) => u._id !== user._id));
-  };
-
-  const isSubActive = (user) => {
-    if (!user.subscription?.endDate) return false;
-    return new Date(user.subscription.endDate) > new Date();
   };
 
   if (loading) return (
@@ -58,8 +67,8 @@ const MembersPage = () => {
         </button>
       </div>
 
-      <div className="toolbar">
-        <div className="search-input-wrapper">
+      <div className="toolbar" style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+        <div className="search-input-wrapper" style={{ flex: "1 1 240px", minWidth: "200px" }}>
           <span className="search-icon">🔍</span>
           <input
             id="members-search"
@@ -69,6 +78,17 @@ const MembersPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <select
+          id="members-sub-filter"
+          className="form-select"
+          style={{ width: "190px" }}
+          value={filterSub}
+          onChange={(e) => setFilterSub(e.target.value)}
+        >
+          <option value="all">All Memberships</option>
+          <option value="active">Active Plan</option>
+          <option value="inactive">No Active Plan</option>
+        </select>
       </div>
 
       <div className="card" style={{ padding: 0 }}>
