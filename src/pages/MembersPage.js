@@ -3,6 +3,7 @@ import useAllUsersFromDB from "../hooks/AdminsHooks/useAllUsersFromDB.js";
 import useAdminHandler from "../hooks/AdminsHooks/useAdminHandler.js";
 import EditUserModal from "../components/AdminDashboardComponents/EditUserModal.js";
 import RecordBodyStatsModal from "../components/AdminDashboardComponents/RecordBodyStatsModal.js";
+import CreateMemberModal from "../components/AdminDashboardComponents/CreateMemberModal.js";
 
 const MembersPage = () => {
   const { allUsers, setAllUsers, loading } = useAllUsersFromDB();
@@ -11,6 +12,7 @@ const MembersPage = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [statsUser, setStatsUser] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   const members = (allUsers || []).filter((u) => u.role === "user");
 
@@ -41,11 +43,19 @@ const MembersPage = () => {
 
   return (
     <>
-      <div className="page-header">
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h1 className="page-title">Members</h1>
           <p className="page-subtitle">{filtered.length} member{filtered.length !== 1 ? "s" : ""}</p>
         </div>
+        <button
+          id="btn-open-create-member"
+          className="btn btn-primary"
+          onClick={() => setShowCreate(true)}
+          style={{ display: "flex", alignItems: "center", gap: "6px" }}
+        >
+          <span>+</span> New Member
+        </button>
       </div>
 
       <div className="toolbar">
@@ -196,6 +206,15 @@ const MembersPage = () => {
           isOpen={!!statsUser}
           onClose={() => setStatsUser(null)}
           setUsers={setAllUsers}
+        />
+      )}
+      {showCreate && (
+        <CreateMemberModal
+          isOpen={showCreate}
+          onClose={() => setShowCreate(false)}
+          onMemberCreated={(newMember) => {
+            setAllUsers((prev) => [newMember, ...prev]);
+          }}
         />
       )}
     </>
