@@ -11,7 +11,7 @@ const BookingsPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/sessions/all?limit=200&page=1");
+        const res = await api.get("/api/sessions/all?limit=200&page=1");
         setSessions(res.data.sessions || []);
       } catch (err) {
         console.error(err);

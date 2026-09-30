@@ -34,7 +34,7 @@ const StaffPage = () => {
     }
     setCreating(true);
     try {
-      const res = await api.post("/users/create", { ...newStaff, role: "staff" });
+      const res = await api.post("/api/users/create", { ...newStaff, role: "staff" });
       setAllUsers((prev) => [...prev, res.data.user || res.data]);
       toast.success("Staff member created!");
       setShowCreate(false);

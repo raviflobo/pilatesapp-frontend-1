@@ -23,8 +23,8 @@ const Dashboard = () => {
     const load = async () => {
       try {
         const [sessRes, usersRes] = await Promise.all([
-          api.get("/sessions/all?limit=100&page=1"),
-          api.get("/users/all?limit=100&page=1"),
+          api.get("/api/sessions/all?limit=100&page=1"),
+          api.get("/api/users/all?limit=200&page=1"),
         ]);
 
         const sessions = sessRes.data.sessions || [];

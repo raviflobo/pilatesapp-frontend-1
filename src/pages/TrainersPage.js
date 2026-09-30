@@ -19,7 +19,7 @@ const TrainersPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/users/all?limit=100&page=1");
+        const res = await api.get("/api/users/all?limit=100&page=1");
         const trainerUsers = (res.data.users || []).filter(
           (u) => u.role === "trainer" || u.role === "staff"
         );

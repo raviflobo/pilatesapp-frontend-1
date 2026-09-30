@@ -40,12 +40,12 @@ const AdminLogin = () => {
 
         <form className="login-form" onSubmit={handleSubmit} id="admin-login-form">
           <div className="form-group">
-            <label className="form-label" htmlFor="admin-email">Email</label>
+            <label className="form-label" htmlFor="admin-email">Email or Username</label>
             <input
               id="admin-email"
-              type="email"
+              type="text"
               className="form-input"
-              placeholder="admin@studio.com"
+              placeholder="admin@studio.com or admin"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
