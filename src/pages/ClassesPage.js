@@ -50,6 +50,29 @@ const ClassesPage = () => {
     if (res) setAllSessions((prev) => prev.map((s) => s._id === session._id ? res.session : s));
   };
 
+  const handleRemoveParticipant = async (sessionId, participant) => {
+    const memberName = participant?.fullName || participant?.username || "this member";
+    const memberId = participant?._id || participant?.phone || participant?.username;
+    if (!window.confirm(`Are you sure you want to remove ${memberName} from this class?`)) return;
+    try {
+      await api.post(`/api/sessions/unregister/${sessionId}/${memberId}`);
+      toast.success(`${memberName} removed from class`);
+      setAllSessions((prev) =>
+        prev.map((s) => {
+          if (s._id !== sessionId) return s;
+          return {
+            ...s,
+            participants: (s.participants || []).filter(
+              (p) => (p._id || p) !== participant._id
+            ),
+          };
+        })
+      );
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to remove member");
+    }
+  };
+
   const filtered = (allSessions || []).filter((s) => {
     const matchSearch = !search ||
       s.type?.toLowerCase().includes(search.toLowerCase()) ||
@@ -221,8 +244,25 @@ const ClassesPage = () => {
                             {s.participants?.length > 0 ? (
                               <div className="flex" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
                                 {s.participants.map((p) => (
-                                  <span key={p._id || p} className="badge badge-active">
-                                    {p.fullName || p.username || String(p)}
+                                  <span key={p._id || p} className="badge badge-active" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                    <span>👤 {p.fullName || p.username || String(p)}{p.phone ? ` · 📞 ${p.phone}` : ""}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveParticipant(s._id, p)}
+                                      title="Remove member from class"
+                                      style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "var(--brand-danger)",
+                                        cursor: "pointer",
+                                        fontWeight: "800",
+                                        fontSize: "0.85rem",
+                                        padding: "0 2px",
+                                        marginLeft: "4px",
+                                      }}
+                                    >
+                                      ✕
+                                    </button>
                                   </span>
                                 ))}
                               </div>
@@ -236,8 +276,25 @@ const ClassesPage = () => {
                                 </div>
                                 <div className="flex" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
                                   {s.waitingList.map((w, i) => (
-                                    <span key={i} className="badge badge-warning">
-                                      #{i + 1} {w.fullName || w.username || String(w)}
+                                    <span key={w._id || i} className="badge badge-warning" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                      <span>#{i + 1} {w.fullName || w.username || String(w)}{w.phone ? ` · 📞 ${w.phone}` : ""}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveParticipant(s._id, w)}
+                                        title="Remove from waiting list"
+                                        style={{
+                                          background: "none",
+                                          border: "none",
+                                          color: "var(--brand-danger)",
+                                          cursor: "pointer",
+                                          fontWeight: "800",
+                                          fontSize: "0.85rem",
+                                          padding: "0 2px",
+                                          marginLeft: "4px",
+                                        }}
+                                      >
+                                        ✕
+                                      </button>
                                     </span>
                                   ))}
                                 </div>
