@@ -5,15 +5,11 @@ import EditSessionModal from "./EditSessionModal";
 import AddUserToSessionModal from "./AddUserToSessionModal";
 
 const formatStatus = (status) => {
-  if (status === "מתוכנן") return "Scheduled";
-  if (status === "בוטל") return "Cancelled";
-  if (status === "הושלם") return "Completed";
-  return status;
+  return status || "Planned";
 };
 
 const formatLocation = (loc) => {
-  if (loc === "סטודיו") return "Studio";
-  return loc;
+  return loc || "Studio";
 };
 
 const AllSessionsTable = ({ sessions, setSessions }) => {
@@ -44,7 +40,7 @@ const AllSessionsTable = ({ sessions, setSessions }) => {
 
   const getRowBackground = (session) => {
     const isFull = session.participants?.length >= session.maxParticipants;
-    const isAvailable = session.status === "מתוכנן";
+    const isAvailable = session.status === "Planned";
     return isAvailable ? (isFull ? "#ffe4e6" : "#ecfdf5") : "#f8fafc";
   };
 
@@ -308,15 +304,15 @@ const styles = {
     fontSize: "0.8rem",
     fontWeight: "600",
     backgroundColor:
-      status === "מתוכנן"
+      status === "Planned"
         ? "#fef08a"
-        : status === "הושלם"
+        : status === "Completed"
         ? "#bbf7d0"
         : "#fecaca",
     color:
-      status === "מתוכנן"
+      status === "Planned"
         ? "#92400e"
-        : status === "הושלם"
+        : status === "Completed"
         ? "#166534"
         : "#991b1b",
   }),

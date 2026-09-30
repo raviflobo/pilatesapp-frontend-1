@@ -11,15 +11,11 @@ import AddUserToSessionModal from "../../AdminDashboardComponents/AddUserToSessi
 import { toast } from "react-toastify";
 
 const formatStatus = (status) => {
-  if (status === "מתוכנן") return "Scheduled";
-  if (status === "בוטל") return "Cancelled";
-  if (status === "הושלם") return "Completed";
-  return status;
+  return status || "Planned";
 };
 
 const formatLocation = (loc) => {
-  if (loc === "סטודיו") return "Studio";
-  return loc;
+  return loc || "Studio";
 };
 
 const getDifficultyBadge = (diff) => {
@@ -180,7 +176,7 @@ const AvailableSessionItem = ({ session }) => {
           flexDirection: "column",
           gap: "14px",
           position: "relative",
-          opacity: currentSession?.status === "הושלם" ? 0.6 : 1,
+          opacity: currentSession?.status === "Completed" ? 0.6 : 1,
           direction: "ltr",
         }}
       >
@@ -237,9 +233,9 @@ const AvailableSessionItem = ({ session }) => {
                 fontWeight: "600",
                 color: "#FFFFFF",
                 backgroundColor:
-                  currentSession.status === "בוטל"
+                  currentSession.status === "Cancelled"
                     ? "#EF5350"
-                    : currentSession.status === "הושלם"
+                    : currentSession.status === "Completed"
                     ? "#9CCC65"
                     : "#0288D1",
               }}
@@ -417,7 +413,7 @@ const AvailableSessionItem = ({ session }) => {
         ) : (
           <button
             type="button"
-            disabled={loading || currentSession?.status === "הושלם"}
+            disabled={loading || currentSession?.status === "Completed"}
             onClick={handleRegister}
             style={{
               width: "100%",

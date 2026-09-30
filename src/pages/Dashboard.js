@@ -33,7 +33,7 @@ const Dashboard = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const planned = sessions.filter((s) => s.status === "מתוכנן");
+        const planned = sessions.filter((s) => s.status === "Planned");
         const todaySessions = planned.filter((s) => {
           const d = new Date(s.date);
           d.setHours(0, 0, 0, 0);

@@ -10,15 +10,11 @@ import { useErrorContext } from "../../../context/errorContext";
 import { toast } from "react-toastify";
 
 const formatStatus = (status) => {
-  if (status === "מתוכנן") return "Scheduled";
-  if (status === "בוטל") return "Cancelled";
-  if (status === "הושלם") return "Completed";
-  return status;
+  return status || "Planned";
 };
 
 const formatLocation = (loc) => {
-  if (loc === "סטודיו") return "Studio";
-  return loc;
+  return loc || "Studio";
 };
 
 const WorkoutCard = ({ session, updatedSessions, setUpdatedSessions }) => {
@@ -77,7 +73,7 @@ const WorkoutCard = ({ session, updatedSessions, setUpdatedSessions }) => {
       const valid = (data || []).filter(
         (s) =>
           s._id !== session._id &&
-          s.status === "מתוכנן" &&
+          s.status === "Planned" &&
           (s.participants?.length || 0) < (s.maxParticipants || 10)
       );
       setAvailableClasses(valid);
@@ -417,12 +413,12 @@ const styles = {
     borderRadius: "10px",
     fontWeight: "600",
     backgroundColor:
-      status === "בוטל"
+      status === "Cancelled"
         ? "#ffe5e5"
-        : status === "הושלם"
+        : status === "Completed"
         ? "#e0f5e0"
         : "#fff6e5",
-    color: status === "בוטל" ? "#a00" : status === "הושלם" ? "#0a0" : "#d76629",
+    color: status === "Cancelled" ? "#a00" : status === "Completed" ? "#0a0" : "#d76629",
   }),
   title: {
     fontSize: "1.1rem",

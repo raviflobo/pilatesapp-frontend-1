@@ -17,7 +17,7 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
         difficulty: session.difficulty || "All Levels",
         trainerName: session.trainer?.name || "Rotem",
         description: session.description || "",
-        status: session.status || "מתוכנן",
+        status: session.status || "Planned",
         location: session.location || "",
         notes: session.notes || "",
         maxParticipants: session.maxParticipants || 0,
@@ -136,13 +136,13 @@ const EditSessionModal = ({ session, isOpen, onClose, setSessions }) => {
         <label>Status:</label>
         <select
           name="status"
-          value={form.status || "מתוכנן"}
+          value={form.status || "Planned"}
           onChange={handleChange}
           style={styles.input}
         >
-          <option value="מתוכנן">Scheduled</option>
-          <option value="הושלם">Completed</option>
-          <option value="בוטל">Cancelled</option>
+          <option value="Planned">Planned</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
       </div>
 

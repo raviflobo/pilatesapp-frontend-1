@@ -17,8 +17,8 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
     trainerName: "Rotem",
     description: "",
     notes: "",
-    status: "מתוכנן",
-    location: "סטודיו",
+    status: "Planned",
+    location: "Studio",
     maxParticipants: 10,
   });
 
@@ -142,9 +142,9 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
         <div style={styles.formGroup}>
           <label>Status:</label>
           <select name="status" value={formData.status} onChange={handleChange} style={styles.input}>
-            <option value="מתוכנן">Scheduled</option>
-            <option value="בוטל">Cancelled</option>
-            <option value="הושלם">Completed</option>
+            <option value="Planned">Planned</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
           </select>
         </div>
         <div style={styles.formGroup}>
@@ -154,8 +154,7 @@ const CreateSessionModal = ({ isOpen, onClose, setSessions }) => {
             type="text"
             defaultValue="Studio"
             onChange={(e) => {
-              const val = e.target.value === "Studio" ? "סטודיו" : e.target.value;
-              setFormData({ ...formData, location: val });
+              setFormData({ ...formData, location: e.target.value });
             }}
             style={styles.input}
           />

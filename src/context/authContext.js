@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetchAuthenticatedUserSessions();
       const sessions = response.filter(
-        (session) => session.status === "מתוכנן"
+        (session) => session.status === "Planned"
       );
       setSessions(sessions);
     } catch (error) {

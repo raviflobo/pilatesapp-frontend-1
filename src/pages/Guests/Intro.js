@@ -52,7 +52,7 @@ const Intro = () => {
   }, [selectedDate]);
 
   const filteredSessions = scheduleSessions.filter(
-    (s) => s.date?.split("T")[0] === selectedDate && s.status === "מתוכנן"
+    (s) => s.date?.split("T")[0] === selectedDate && s.status === "Planned"
   );
 
   const scrollToSection = (id) => {

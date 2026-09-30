@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 import api from "../api/api.js";
 
 const STATUS_MAP = {
-  "מתוכנן": { label: "Planned", cls: "badge-planned" },
-  "בוטל":   { label: "Cancelled", cls: "badge-cancelled" },
-  "הושלם":  { label: "Completed", cls: "badge-completed" },
+  Planned: { label: "Planned", cls: "badge-planned" },
+  Cancelled: { label: "Cancelled", cls: "badge-cancelled" },
+  Completed: { label: "Completed", cls: "badge-completed" },
 };
 
 const ClassesPage = () => {
@@ -134,9 +134,9 @@ const ClassesPage = () => {
           onChange={(e) => setFilterStatus(e.target.value)}
         >
           <option value="all">All Statuses</option>
-          <option value="מתוכנן">Planned</option>
-          <option value="הושלם">Completed</option>
-          <option value="בוטל">Cancelled</option>
+          <option value="Planned">Planned</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
       </div>
 
@@ -202,7 +202,7 @@ const ClassesPage = () => {
                               className="btn btn-ghost btn-sm btn-icon"
                               onClick={() => setEditingSession(s)}
                               title="Edit"
-                              disabled={s.status !== "מתוכנן"}
+                              disabled={s.status !== "Planned"}
                             >✏️</button>
                             <button
                               id={`class-members-${s._id}`}
@@ -215,9 +215,9 @@ const ClassesPage = () => {
                               className="btn btn-success btn-sm"
                               onClick={() => setAddingUserSessionId(s._id)}
                               title="Add member"
-                              disabled={s.status !== "מתוכנן"}
+                              disabled={s.status !== "Planned"}
                             >+ Member</button>
-                            {s.status === "מתוכנן" && (
+                            {s.status === "Planned" && (
                               <button
                                 id={`class-cancel-${s._id}`}
                                 className="btn btn-ghost btn-sm"

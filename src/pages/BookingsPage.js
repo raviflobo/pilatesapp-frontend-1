@@ -50,9 +50,9 @@ const BookingsPage = () => {
   };
 
   const STATUS_MAP = {
-    "מתוכנן": { label: "Planned", cls: "badge-planned" },
-    "בוטל":   { label: "Cancelled", cls: "badge-cancelled" },
-    "הושלם":  { label: "Completed", cls: "badge-completed" },
+    Planned: { label: "Planned", cls: "badge-planned" },
+    Cancelled: { label: "Cancelled", cls: "badge-cancelled" },
+    Completed: { label: "Completed", cls: "badge-completed" },
   };
 
   const filtered = sessions.filter((s) => {
@@ -102,9 +102,9 @@ const BookingsPage = () => {
           onChange={(e) => setFilterStatus(e.target.value)}
         >
           <option value="all">All Statuses</option>
-          <option value="מתוכנן">Planned</option>
-          <option value="הושלם">Completed</option>
-          <option value="בוטל">Cancelled</option>
+          <option value="Planned">Planned</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
       </div>
 

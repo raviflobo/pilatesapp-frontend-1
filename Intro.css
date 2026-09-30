@@ -142,8 +142,8 @@
   margin-bottom: 2rem;
 }
 
-/* Special handling for בית (Home) Section */
-#בית {
+/* Special handling for Home Section */
+#home {
   padding-top: 2rem;
   padding-bottom: 2rem;
   scroll-margin-top: 180px;
@@ -217,7 +217,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-direction: row-reverse; /* כדי שהאייקון יהיה בצד שמאל */
+  flex-direction: row-reverse; /* Icon on the left side */
   gap: 0.7rem;
   padding: 0.1rem 1rem;
   height: 80px;
@@ -239,7 +239,7 @@
   background-color: #1ebe57;
 }
 
-/* כאן האייקון החדש */
+/* Icon styling */
 .whatsapp-icon {
   width: 40px;
   height: 40px;
@@ -249,12 +249,12 @@
   transition: transform 0.3s ease;
 }
 
-/* אפקט רטט על האייקון כשהכפתור בריחוף */
+/* Vibration effect on button hover */
 .whatsapp-button:hover .whatsapp-icon {
   animation: vibrate 0.4s linear infinite;
 }
 
-/* הגדרת רטט */
+/* Vibration animation definition */
 @keyframes vibrate {
   0% {
     transform: translate(0);
