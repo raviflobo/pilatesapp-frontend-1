@@ -55,7 +55,12 @@ export const AuthProvider = ({ children }) => {
       console.log("Login response:", response);
       if (response.status === 200) {
         await loadUserData(); // Load user data after successful login
-        await loadUserSessions(); // Fetch user sessions after login
+        try {
+          await loadUserSessions(); // Fetch user sessions after login
+        } catch (e) {
+          console.warn("Could not load sessions on login:", e);
+        }
+        return response?.data?.user;
       }
     } catch (error) {
       console.error("Login failed:", error);
